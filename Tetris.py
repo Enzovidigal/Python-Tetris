@@ -131,9 +131,31 @@ T = [['.....',
       '.00..',
       '..0..',
       '.....']]
+
+K = [['.....',
+      '.0...',
+      '.000.',
+      '...0.',
+      '.....'],
+     ['.....',
+      '..0..',
+      '.000.',
+      '..0..',
+      '.....'],
+     ['.....',
+      '.....',
+      '.000.',
+      '.....',
+      '.....'],
+     ['..0..',
+      '..0..',
+      '.00..',
+      '..0..',
+      '.....']]
+      
  
-shapes = [S, Z, I, O, J, L, T]
-shape_colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)]
+shapes = [S, Z, I, O, J, K]
+shape_colors = [(255, 216, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0),(255 , 255 , 255)]
 # index 0 - 6 representa a forma
  
  
@@ -221,7 +243,7 @@ def draw_grid(surface, row, col):
  
 def clear_rows(grid, locked):
     # Confere se a linha está vazia e toda outra coluna abaixo dela, desce uma linha.
- 
+    SCORE=0
     inc = 0
     for i in range(len(grid)-1,-1,-1):
         row = grid[i]
@@ -229,6 +251,19 @@ def clear_rows(grid, locked):
             inc += 1
             # adiciona posições 
             ind = i
+            SCORE+=1
+            draw_text_middle("+1", 10, (255,255,255))
+            for j in range(len(row)):
+                try:
+                    del locked[(j, i)]
+                except:
+                    continue
+        if (255, 216, 0) in row:
+            inc += 1
+            # adiciona posições 
+            ind = i
+            SCORE+=1
+            print("+1")
             for j in range(len(row)):
                 try:
                     del locked[(j, i)]
@@ -291,6 +326,7 @@ def main():
     fall_time = 0
  
     while run:
+
         fall_speed = 0.27
  
         grid = create_grid(locked_positions)
@@ -304,6 +340,11 @@ def main():
             if not (valid_space(current_piece, grid)) and current_piece.y > 0:
                 current_piece.y -= 1
                 change_piece = True
+        
+
+        
+            
+            
  
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -365,10 +406,10 @@ def main():
         # Check if user lost
         if check_lost(locked_positions):
             run = False
- 
-    draw_text_middle("You Lost", 40, (255,255,255), win)
+    win.fill((0,0,0))
+    draw_text_middle("GAME OVER", 100, (255,255,255), win)
     pygame.display.update()
-    pygame.time.delay(2000)
+    pygame.time.delay(4000)
  
  
 def main_menu():
