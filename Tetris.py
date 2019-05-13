@@ -243,7 +243,6 @@ def draw_grid(surface, row, col):
  
 def clear_rows(grid, locked):
     # Confere se a linha está vazia e toda outra coluna abaixo dela, desce uma linha.
-    SCORE=0
     inc = 0
     for i in range(len(grid)-1,-1,-1):
         row = grid[i]
@@ -251,8 +250,7 @@ def clear_rows(grid, locked):
             inc += 1
             # adiciona posições 
             ind = i
-            SCORE+=1
-            draw_text_middle("+1", 10, (255,255,255))
+            draw_text_middle("+1", 10, (255,255,255), win)
             for j in range(len(row)):
                 try:
                     del locked[(j, i)]
@@ -262,7 +260,6 @@ def clear_rows(grid, locked):
             inc += 1
             # adiciona posições 
             ind = i
-            SCORE+=1
             print("+1")
             for j in range(len(row)):
                 try:
@@ -310,6 +307,8 @@ def draw_window(surface):
     draw_grid(surface, 20, 10)
     pygame.draw.rect(surface, (255, 0, 0), (top_LEFT_X, top_LEFT_Y, play_WIDTH, play_HEIGHT), 5)
     # pygame.display.update()
+
+
  
  
 def main():
@@ -324,15 +323,22 @@ def main():
     next_piece = get_shape()
     clock = pygame.time.Clock()
     fall_time = 0
- 
-    while run:
+    level_time=0 
+    fall_speed = 0.27
 
-        fall_speed = 0.27
+    while run:
  
         grid = create_grid(locked_positions)
         fall_time += clock.get_rawtime()
         clock.tick()
- 
+
+        #feature que acelera o jogo
+        level_time += clock.get_rawtime()
+        if level_time/1000 > 1:
+            level_time=0
+            fall_speed-=0.002
+
+
         # PIECE FALLING CODE
         if fall_time/1000 >= fall_speed:
             fall_time = 0
@@ -340,8 +346,6 @@ def main():
             if not (valid_space(current_piece, grid)) and current_piece.y > 0:
                 current_piece.y -= 1
                 change_piece = True
-        
-
         
             
             
