@@ -8,7 +8,7 @@ Este é um arquivo de script temporário.
 
 import pygame
 import random
- 
+from os import path 
 """
 10 x 20 square grid
 shapes: S, Z, I, O, J, L, T
@@ -23,11 +23,13 @@ s_HEIGHT = 700
 play_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 play_HEIGHT = 600  # meaning 600 // 20 = 20 height per blo ck
 block_SIZE = 30
+SCORE=0
+
  
 top_LEFT_X = (s_WIDTH - play_WIDTH) // 2
 top_LEFT_Y = s_HEIGHT - play_HEIGHT
  
- 
+snd_dir = path.join(path.dirname(__file__), 'snd')
 # Formas
  
 S = [['.....',
@@ -170,7 +172,16 @@ class Piece(object):
         self.color = shape_colors[shapes.index(shape)]
         self.rotation = 0  # número de 0-3
  
- 
+def load_assets(snd_dir):
+    assets = {}
+    assets["boom_sound"] = pygame.mixer.Sound(path.join(snd_dir, 'expl3.wav'))
+    return assets
+
+    pygame.mixer.music.load(path.join(snd_dir, 'tgfcoder-FrozenJam-SeamlessLoop.ogg'))
+    pygame.mixer.music.set_volume(0.4)
+    boom_sound = assets["boom_sound"]
+    pygame.mixer.music.play(loops=-1)
+
 def create_grid(locked_positions={}):
     grid = [[(0,0,0) for x in range(10)] for x in range(20)]
  
@@ -240,8 +251,9 @@ def draw_grid(surface, row, col):
         for j in range(col):
             pygame.draw.line(surface, (128,128,128), (sx + j * 30, sy), (sx + j * 30, sy + play_HEIGHT))  # vertical lines
  
- 
+
 def clear_rows(grid, locked):
+    global SCORE
     # Confere se a linha está vazia e toda outra coluna abaixo dela, desce uma linha.
     inc = 0
     for i in range(len(grid)-1,-1,-1):
@@ -250,10 +262,12 @@ def clear_rows(grid, locked):
             inc += 1
             # adiciona posições 
             ind = i
-            draw_text_middle("+1", 10, (255,255,255), win)
+            draw_text_middle("+1", 100, (255,255,255), win)
             for j in range(len(row)):
                 try:
                     del locked[(j, i)]
+                    SCORE+=1
+
                 except:
                     continue
         if (255, 216, 0) in row:
@@ -290,7 +304,6 @@ def draw_next_shape(shape, surface):
  
     surface.blit(label, (sx + 10, sy- 30))
  
- 
 def draw_window(surface):
     surface.fill((0,0,0))
     # Titulo Tetris 
@@ -298,6 +311,14 @@ def draw_window(surface):
     label = font.render('TETRIS', 1, (255,255,255))
  
     surface.blit(label, (top_LEFT_X + play_WIDTH / 2 - (label.get_width() / 2), 30))
+
+    font = pygame.font.SysFont('comicsans', 30)
+    label = font.render('Score:'+ str(SCORE), 1, (255,255,255))
+
+    sx = top_LEFT_X + play_WIDTH + 50
+    sy = top_LEFT_Y + play_HEIGHT/2 - 100
+
+    surface.blit(label, (sx + 20, sy + 160))
  
     for i in range(len(grid)):
         for j in range(len(grid[i])):
@@ -309,7 +330,7 @@ def draw_window(surface):
     # pygame.display.update()
 
 
- 
+
  
 def main():
     global grid
@@ -325,13 +346,14 @@ def main():
     fall_time = 0
     level_time=0 
     fall_speed = 0.27
-
     while run:
  
         grid = create_grid(locked_positions)
         fall_time += clock.get_rawtime()
         clock.tick()
 
+        #score
+        
         #feature que acelera o jogo
         level_time += clock.get_rawtime()
         if level_time/1000 > 1:
@@ -414,7 +436,7 @@ def main():
     draw_text_middle("GAME OVER", 100, (255,255,255), win)
     pygame.display.update()
     pygame.time.delay(4000)
- 
+
  
 def main_menu():
     run = True
