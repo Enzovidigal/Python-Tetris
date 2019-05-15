@@ -24,7 +24,7 @@ play_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 play_HEIGHT = 600  # meaning 600 // 20 = 20 height per blo ck
 block_SIZE = 30
 SCORE=0
-
+last_score=0
  
 top_LEFT_X = (s_WIDTH - play_WIDTH) // 2
 top_LEFT_Y = s_HEIGHT - play_HEIGHT
@@ -286,6 +286,14 @@ def clear_rows(grid, locked):
             if y < ind:
                 newKey = (x, y + inc)
                 locked[newKey] = locked.pop(key)
+
+def high_score(SCORE):
+    global last_score
+    if SCORE>=last_score:
+        last_score=SCORE
+    return last_score
+    
+    
  
  
 def draw_next_shape(shape, surface):
@@ -311,7 +319,8 @@ def draw_window(surface):
     label = font.render('TETRIS', 1, (255,255,255))
  
     surface.blit(label, (top_LEFT_X + play_WIDTH / 2 - (label.get_width() / 2), 30))
-
+    
+    #score
     font = pygame.font.SysFont('comicsans', 30)
     label = font.render('Score:'+ str(SCORE), 1, (255,255,255))
 
@@ -319,7 +328,15 @@ def draw_window(surface):
     sy = top_LEFT_Y + play_HEIGHT/2 - 100
 
     surface.blit(label, (sx + 20, sy + 160))
- 
+    
+    #high score
+    label = font.render('High Score: ' + str(high_score(SCORE)), 1, (255,255,255))
+
+    sx = top_LEFT_X - 200
+    sy = top_LEFT_Y + 200
+
+    surface.blit(label, (sx + 20, sy + 160))
+
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             pygame.draw.rect(surface, grid[i][j], (top_LEFT_X + j* 30, top_LEFT_Y + i * 30, 30, 30), 0)
