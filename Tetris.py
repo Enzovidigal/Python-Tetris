@@ -448,7 +448,9 @@ def main():
  
         # Check if user lost
         if check_lost(locked_positions):
+            global SCORE
             run = False
+            SCORE=0
     win.fill((0,0,0))
     draw_text_middle("GAME OVER", 100, (255,255,255), win)
     pygame.display.update()
