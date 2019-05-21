@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Spyder Editor
-
 Este é um arquivo de script temporário.
 """
 
@@ -18,7 +17,7 @@ represented in order by 0 - 6
 pygame.font.init()
  
 # Variáveis globais
-s_WIDTH = 800
+s_WIDTH = 1600
 s_HEIGHT = 700
 play_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 play_HEIGHT = 600  # meaning 600 // 20 = 20 height per blo ck
@@ -26,7 +25,10 @@ block_SIZE = 30
 SCORE=0
 last_score=0
  
+   
 top_LEFT_X = (s_WIDTH - play_WIDTH) // 2
+top_LEFT_X1 = (s_WIDTH - play_WIDTH) // 2 -400 
+top_LEFT_X2 = (s_WIDTH - play_WIDTH) // 2 +400
 top_LEFT_Y = s_HEIGHT - play_HEIGHT
  
 snd_dir = path.join(path.dirname(__file__), 'snd')
@@ -171,16 +173,6 @@ class Piece(object):
         self.shape = shape
         self.color = shape_colors[shapes.index(shape)]
         self.rotation = 0  # número de 0-3
- 
-def load_assets(snd_dir):
-    assets = {}
-    assets["boom_sound"] = pygame.mixer.Sound(path.join(snd_dir, 'expl3.wav'))
-    return assets
-
-    pygame.mixer.music.load(path.join(snd_dir, 'tgfcoder-FrozenJam-SeamlessLoop.ogg'))
-    pygame.mixer.music.set_volume(0.4)
-    boom_sound = assets["boom_sound"]
-    pygame.mixer.music.play(loops=-1)
 
 def create_grid(locked_positions={}):
     grid = [[(0,0,0) for x in range(10)] for x in range(20)]
@@ -191,7 +183,7 @@ def create_grid(locked_positions={}):
                 c = locked_positions[(j,i)]
                 grid[i][j] = c
     return grid
- 
+
  
 def convert_shape_format(shape):
     positions = []
@@ -239,13 +231,10 @@ def get_shape():
 def draw_text_middle(text, size, color, surface):
     font = pygame.font.SysFont('comicsans', size, bold=True)
     label = font.render(text, 1, color)
- 
     surface.blit(label, (top_LEFT_X + play_WIDTH/2 - (label.get_width() / 2), top_LEFT_Y + play_HEIGHT/2 - label.get_height()/2))
  
  
-def draw_grid(surface, row, col):
-    sx = top_LEFT_X
-    sy = top_LEFT_Y
+def draw_grid(surface, row, col, sx, sy):
     for i in range(row):
         pygame.draw.line(surface, (128,128,128), (sx, sy+ i*30), (sx + play_WIDTH, sy + i * 30))  # horizontal lines
         for j in range(col):
@@ -296,11 +285,11 @@ def high_score(SCORE):
     
  
  
-def draw_next_shape(shape, surface):
+def draw_next_shape(shape, surface, top_x):
     font = pygame.font.SysFont('comicsans', 30)
     label = font.render('Next Shape', 1, (255,255,255))
  
-    sx = top_LEFT_X + play_WIDTH + 50
+    sx = top_x + play_WIDTH + 50
     sy = top_LEFT_Y + play_HEIGHT/2 - 100
     format = shape.shape[shape.rotation % len(shape.shape)]
  
@@ -312,19 +301,18 @@ def draw_next_shape(shape, surface):
  
     surface.blit(label, (sx + 10, sy- 30))
  
-def draw_window(surface):
-    surface.fill((0,0,0))
+def draw_window(surface, top_x):
     # Titulo Tetris 
     font = pygame.font.SysFont('comicsans', 60)
-    label = font.render('TETRIS', 1, (255,255,255))
+    label = font.render('TETRIS', 1, (0,0,0))
  
-    surface.blit(label, (top_LEFT_X + play_WIDTH / 2 - (label.get_width() / 2), 30))
+    surface.blit(label, (top_x + play_WIDTH / 2 - (label.get_width() / 2), 30))
     
     #score
     font = pygame.font.SysFont('comicsans', 30)
     label = font.render('Score:'+ str(SCORE), 1, (255,255,255))
 
-    sx = top_LEFT_X + play_WIDTH + 50
+    sx = top_x + play_WIDTH + 50
     sy = top_LEFT_Y + play_HEIGHT/2 - 100
 
     surface.blit(label, (sx + 20, sy + 160))
@@ -332,18 +320,18 @@ def draw_window(surface):
     #high score
     label = font.render('High Score: ' + str(high_score(SCORE)), 1, (255,255,255))
 
-    sx = top_LEFT_X - 200
+    sx = top_x - 200
     sy = top_LEFT_Y + 200
 
     surface.blit(label, (sx + 20, sy + 160))
 
     for i in range(len(grid)):
         for j in range(len(grid[i])):
-            pygame.draw.rect(surface, grid[i][j], (top_LEFT_X + j* 30, top_LEFT_Y + i * 30, 30, 30), 0)
+            pygame.draw.rect(surface, grid[i][j], (top_x + j* 30, top_LEFT_Y + i * 30, 30, 30), 0)
  
     # draw grid and border
-    draw_grid(surface, 20, 10)
-    pygame.draw.rect(surface, (255, 0, 0), (top_LEFT_X, top_LEFT_Y, play_WIDTH, play_HEIGHT), 5)
+    draw_grid(surface, 20, 10, top_x, top_LEFT_Y)
+    pygame.draw.rect(surface, (255, 0, 0), (top_x, top_LEFT_Y, play_WIDTH, play_HEIGHT), 5)
     # pygame.display.update()
 
 
@@ -400,7 +388,7 @@ def main():
                     current_piece.x -= 1
                     if not valid_space(current_piece, grid):
                         current_piece.x += 1
- 
+                        
                 elif event.key == pygame.K_RIGHT:
                     current_piece.x += 1
                     if not valid_space(current_piece, grid):
@@ -441,9 +429,12 @@ def main():
  
             # call four times to check for multiple clear rows
             clear_rows(grid, locked_positions)
- 
-        draw_window(win)
-        draw_next_shape(next_piece, win)
+        win.fill((0,0,0))
+        draw_window(win, top_LEFT_X1)
+        draw_window(win, top_LEFT_X2)
+        
+        draw_next_shape(next_piece, win, top_LEFT_X1)
+        draw_next_shape(next_piece, win, top_LEFT_X2)
         pygame.display.update()
  
         # Check if user lost
