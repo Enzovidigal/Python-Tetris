@@ -17,7 +17,7 @@ represented in order by 0 - 6
 pygame.font.init()
  
 # Variáveis globais
-s_WIDTH = 1600
+s_WIDTH = 1500
 s_HEIGHT = 700
 play_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 play_HEIGHT = 600  # meaning 600 // 20 = 20 height per blo ck
@@ -156,10 +156,73 @@ K = [['.....',
       '.00..',
       '..0..',
       '.....']]
+     
+E = [['.....',
+      '..0..',
+      '.000.',
+      '..0.',
+      '.....'],
+     ['.....',
+      '..0..',
+      '.000.',
+      '..0..',
+      '.....'],
+     ['.....',
+      '..0..',
+      '.000.',
+      '..0..',
+      '.....'],
+     ['.....',
+      '..0..',
+      '.000.',
+      '..0..',
+      '.....']]
+     
+M = [['.....',
+      '.0...',
+      '.000.',
+      '...0.',
+      '.....'],
+     ['.....',
+      '..0..',
+      '.00.',
+      '..0..',
+      '.....'],
+     ['.....',
+      '.....',
+      '.000.',
+      '..0..',
+      '..0..'],
+     ['.....',
+      '..0..',
+      '.00..',
+      '..000',
+      '.....']]
+
+T = [['.....',
+      '.....',
+      '.000.',
+      '...0.',
+      '...0.'],
+     ['.....',
+      '.00..',
+      '..0.',
+      '..00.',
+      '.....'],
+     ['.....',
+      '..0..',
+      '.000.',
+      '..0..',
+      '..0..'],
+     ['.....',
+      '.....',
+      '.00..',
+      '..00.',
+      '.....']]
       
  
-shapes = [S, Z, I, O, J, K]
-shape_colors = [(255, 216, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0),(255 , 255 , 255)]
+shapes = [S, Z, I, O, J, K, E, M, T]
+shape_colors = [(255, 216, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0),(255 , 255 , 255),(255, 0, 255),(255 , 255 , 255), (255 , 255 , 255)]
 # index 0 - 6 representa a forma
  
  
@@ -232,8 +295,33 @@ def draw_text_middle(text, size, color, surface):
     font = pygame.font.SysFont('comicsans', size, bold=True)
     label = font.render(text, 1, color)
     surface.blit(label, (top_LEFT_X + play_WIDTH/2 - (label.get_width() / 2), top_LEFT_Y + play_HEIGHT/2 - label.get_height()/2))
+
  
- 
+def draw_text_up_right(text, size, color, surface):
+    font = pygame.font.SysFont('comicsans', size, bold=True)
+    label = font.render(text, 1, color)
+    surface.blit(label, (top_LEFT_X +550 + play_WIDTH/2 - (label.get_width()/2), top_LEFT_Y - 350 + play_HEIGHT/2 - label.get_height()/2))
+
+def draw_text_down_left(text, size, color, surface):
+    font = pygame.font.SysFont('comicsans', size, bold=True)
+    label = font.render(text, 1, color)
+    surface.blit(label, (top_LEFT_X - 550 + play_WIDTH/2 - (label.get_width() / 2), top_LEFT_Y+240 + play_HEIGHT/2 - label.get_height()/2))
+
+def draw_text_up_left(text, size, color, surface):
+    font = pygame.font.SysFont('comicsans', size, bold=True)
+    label = font.render(text, 1, color)
+    surface.blit(label, (top_LEFT_X -530 + play_WIDTH/2 - (label.get_width() / 2), top_LEFT_Y -350 + play_HEIGHT/2 - label.get_height()/2))
+
+def draw_text_down_right(text, size, color, surface):
+    font = pygame.font.SysFont('comicsans', size, bold=True)
+    label = font.render(text, 1, color)
+    surface.blit(label, (top_LEFT_X + 600 + play_WIDTH/2 - (label.get_width() / 2), top_LEFT_Y+240 + play_HEIGHT/2 - label.get_height()/2))
+
+def draw_text_legend(text, size, color, surface):
+    font = pygame.font.SysFont('comicsans', size, bold=True)
+    label = font.render(text, 1, color)
+    surface.blit(label, (top_LEFT_X + play_WIDTH/2 - (label.get_width() / 2), top_LEFT_Y+100 + play_HEIGHT/2 - label.get_height()/2))
+
 def draw_grid(surface, row, col, sx, sy):
     for i in range(row):
         pygame.draw.line(surface, (128,128,128), (sx, sy+ i*30), (sx + play_WIDTH, sy + i * 30))  # horizontal lines
@@ -267,6 +355,7 @@ def clear_rows(grid, locked):
             for j in range(len(row)):
                 try:
                     del locked[(j, i)]
+                    SCORE+=1
                 except:
                     continue
     if inc > 0:
@@ -452,7 +541,12 @@ def main_menu():
     run = True
     while run:
         win.fill((0,0,0))
-        draw_text_middle('Press any key to begin.', 60, (255, 255, 255), win)
+        draw_text_middle('TETRIS', 100, (255, 255, 255), win)
+        draw_text_legend('Clique para começar', 25, (255, 255, 255), win)
+        draw_text_up_right('AMARELA - Bomba', 50, (255, 216, 0), win)
+        draw_text_up_left('VERMELHA - Regular', 50, (255, 0, 0), win)
+        draw_text_down_right('ROSA - Fixa', 50, (255, 0, 255), win)
+        draw_text_down_left('BRANCA - Variável', 50, (255, 255, 255), win)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
