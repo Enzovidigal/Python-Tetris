@@ -22,6 +22,10 @@ s_HEIGHT = 700
 play_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 play_HEIGHT = 600  # meaning 600 // 20 = 20 height per blo ck
 block_SIZE = 30
+SCORE1=0
+last_score1=0
+SCORE2=0
+last_score2=0
  
    
 top_LEFT_X = (s_WIDTH - play_WIDTH) // 2
@@ -336,7 +340,7 @@ def draw_grid(surface, row, col, sx, sy):
             pygame.draw.line(surface, (128,128,128), (sx + j * 30, sy), (sx + j * 30, sy + play_HEIGHT))  # vertical lines
  
 
-def clear_rows(grid, locked, SCORE):
+def clear_rows(grid, SCORE, locked):
     # Confere se a linha está vazia e toda outra coluna abaixo dela, desce uma linha.
     inc = 0
     for i in range(len(grid)-1,-1,-1):
@@ -436,7 +440,9 @@ def main():
     locked_positions2 = {}
     grid1 = create_grid(locked_positions1)
     grid2 =create_grid(locked_positions2)
- 
+
+    SCORE1=0
+    SCORE2=0
  
     change_piece1 = False
     change_piece2 = False
@@ -514,7 +520,7 @@ def main():
 
                 elif event.key == pygame.K_UP:
                     # rotate shape
-                    current_piece2.rotation = current_piece1.rotation + 1 % len(current_piece2.shape)
+                    current_piece2.rotation = current_piece2.rotation + 1 % len(current_piece2.shape)
                     if not valid_space(current_piece2, grid1):
                         current_piece2.rotation = current_piece2.rotation - 1 % len(current_piece2.shape)
  
@@ -541,6 +547,7 @@ def main():
                        current_piece2.y += 1
                    current_piece2.y -= 1
                    print(convert_shape_format(current_piece2))
+                   
         shape_pos1 = convert_shape_format(current_piece1)
         shape_pos2 = convert_shape_format(current_piece2)
 
@@ -565,7 +572,7 @@ def main():
             next_piece1 = get_shape()
             change_piece1 = False
 
-            clear_rows(grid1, locked_positions1, SCORE1)
+            clear_rows(grid1, SCORE1, locked_positions1)
         if change_piece2:
             for pos in shape_pos2:
                 p = (pos[0], pos[1])
@@ -575,7 +582,7 @@ def main():
             change_piece2 = False
  
             # call four times to check for multiple clear rows
-            clear_rows(grid2, locked_positions2, SCORE2)
+            clear_rows(grid2, SCORE2, locked_positions2)
         
         win.fill((0,0,0))
         draw_window(win, top_LEFT_X1, grid1, SCORE1, last_score1)
