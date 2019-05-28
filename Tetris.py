@@ -22,6 +22,9 @@ s_HEIGHT = 700
 play_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 play_HEIGHT = 600  # meaning 600 // 20 = 20 height per blo ck
 block_SIZE = 30
+last_score1=0
+last_score2=0
+peca=0
  
    
 top_LEFT_X = (s_WIDTH - play_WIDTH) // 2
@@ -218,11 +221,32 @@ T = [['.....',
       '..00.',
       '.....']]
       
+Q = [['.....',
+      '.....',
+      '.000.',
+      '.0.0.',
+      '.000.'],
+     ['.....',
+      '.000.',
+      '.0.0.',
+      '.000.',
+      '.....'],
+     ['.....',
+      '.000.',
+      '.0.0.',
+      '.000.',
+      '.....'],
+     ['.....',
+      '.000.',
+      '.0.0.',
+      '.000.',
+      '.....']]
+      
  
-shapes = [S, Z, I, O, J, K, E, M, T]
-shape_colors = [(255, 216, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0),(255 , 255 , 255),(255, 0, 255),(255 , 255 , 255), (255 , 255 , 255)]
+shapes = [S, Z, I, O, J, K, E, M, T, Q]
+shape_colors = [(255, 216, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0), (255, 0, 0),(255 , 255 , 255),(255, 0, 255),(255 , 255 , 255), (255 , 255 , 255),(255,165,0)]
 # index 0 - 6 representa a forma
- 
+
  
 class Piece(object):
     rows = 20  # y
@@ -283,10 +307,12 @@ def check_lost(positions, SCORE):
     return False
  
  
-def get_shape():
+def get_shape(buraco):
     global shapes, shape_colors
- 
-    return Piece(5, 0, random.choice(shapes))
+    if buraco:
+        return Piece(5,0,Q)
+    else:
+        return Piece(5,0, random.choice(shapes[:-1]))
  
  
 def draw_text_middle(text, size, color, surface):
@@ -351,6 +377,7 @@ def clear_rows(grid, SCORE, locked):
                     del locked[(j, i)]
                     SCORE+=1
 
+
                 except:
                     continue
         if (255, 216, 0) in row:
@@ -387,7 +414,7 @@ def draw_next_shape(shape, surface, top_x):
     sx = top_x + play_WIDTH + 50
     sy = top_LEFT_Y + play_HEIGHT/2 - 100
     format = shape.shape[shape.rotation % len(shape.shape)]
- 
+
     for i, line in enumerate(format):
         row = list(line)
         for j, column in enumerate(row):
@@ -414,6 +441,7 @@ def draw_window(surface, top_x, grid, SCORE, last_score):
     
     #high score
     label = font.render('High Score: ' + str(high_score(SCORE, last_score)), 1, (255,255,255))
+    
 
     sx = top_x - 200
     sy = top_LEFT_Y + 200
@@ -438,18 +466,19 @@ def main():
     grid1 = create_grid(locked_positions1)
     grid2 =create_grid(locked_positions2)
 
+
     SCORE1=0
-    last_score1=0
     SCORE2=0
-    last_score2=0
- 
+
     change_piece1 = False
     change_piece2 = False
     run = True
-    current_piece1 = get_shape()
-    current_piece2 = get_shape()
-    next_piece1 = get_shape()
-    next_piece2 = get_shape()
+    buraco1=False
+    buraco2=False
+    current_piece1 = get_shape(False)
+    current_piece2 = get_shape(False)
+    next_piece1 = get_shape(False)
+    next_piece2 = get_shape(False)
     clock = pygame.time.Clock()
     fall_time = 0
     level_time=0 
@@ -568,20 +597,29 @@ def main():
                 p = (pos[0], pos[1])
                 locked_positions1[p] = current_piece1.color
             current_piece1 = next_piece1
-            next_piece1 = get_shape()
+            next_piece1 = get_shape(buraco1)
             change_piece1 = False
+            buraco1 = False
 
-            SCORE1=clear_rows(grid1, SCORE1, locked_positions1)
+            new_score1=clear_rows(grid1, SCORE1, locked_positions1)
+            if new_score1!= SCORE1:
+                buraco2=True
+            SCORE1= new_score1
+        
         if change_piece2:
             for pos in shape_pos2:
                 p = (pos[0], pos[1])
                 locked_positions2[p] = current_piece2.color
             current_piece2 = next_piece2
-            next_piece2 = get_shape()
+            next_piece2 = get_shape(buraco2)
             change_piece2 = False
+            buraco2 = False
  
             # call four times to check for multiple clear rows
-            SCORE2=clear_rows(grid2, SCORE2, locked_positions2)
+            new_score2=clear_rows(grid2, SCORE2, locked_positions2)
+            if new_score2 != SCORE2:
+                buraco1=True
+            SCORE2= new_score2
         
         win.fill((0,0,0))
         draw_window(win, top_LEFT_X1, grid1, SCORE1, last_score1)
