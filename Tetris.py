@@ -22,10 +22,6 @@ s_HEIGHT = 700
 play_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 play_HEIGHT = 600  # meaning 600 // 20 = 20 height per blo ck
 block_SIZE = 30
-SCORE1=0
-last_score1=0
-SCORE2=0
-last_score2=0
  
    
 top_LEFT_X = (s_WIDTH - play_WIDTH) // 2
@@ -374,6 +370,7 @@ def clear_rows(grid, SCORE, locked):
             if y < ind:
                 newKey = (x, y + inc)
                 locked[newKey] = locked.pop(key)
+    return SCORE
 
 def high_score(SCORE, last_score):
     if SCORE>=last_score:
@@ -442,7 +439,9 @@ def main():
     grid2 =create_grid(locked_positions2)
 
     SCORE1=0
+    last_score1=0
     SCORE2=0
+    last_score2=0
  
     change_piece1 = False
     change_piece2 = False
@@ -572,7 +571,7 @@ def main():
             next_piece1 = get_shape()
             change_piece1 = False
 
-            clear_rows(grid1, SCORE1, locked_positions1)
+            SCORE1=clear_rows(grid1, SCORE1, locked_positions1)
         if change_piece2:
             for pos in shape_pos2:
                 p = (pos[0], pos[1])
@@ -582,7 +581,7 @@ def main():
             change_piece2 = False
  
             # call four times to check for multiple clear rows
-            clear_rows(grid2, SCORE2, locked_positions2)
+            SCORE2=clear_rows(grid2, SCORE2, locked_positions2)
         
         win.fill((0,0,0))
         draw_window(win, top_LEFT_X1, grid1, SCORE1, last_score1)
