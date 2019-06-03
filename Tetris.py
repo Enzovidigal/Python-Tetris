@@ -8,11 +8,7 @@ Este é um arquivo de script temporário.
 import pygame
 import random
 from os import path 
-"""
-10 x 20 square grid
-shapes: S, Z, I, O, J, L, T
-represented in order by 0 - 6
-"""
+
  
 pygame.font.init()
  
@@ -24,7 +20,6 @@ play_HEIGHT = 600  # meaning 600 // 20 = 20 height per blo ck
 block_SIZE = 30
 last_score1=0
 last_score2=0
-peca=0
  
    
 top_LEFT_X = (s_WIDTH - play_WIDTH) // 2
@@ -400,7 +395,7 @@ def clear_rows(grid, SCORE, locked):
     return SCORE
 
 def high_score(SCORE, last_score):
-    if SCORE>=last_score:
+    if SCORE>last_score:
         last_score=SCORE
     return last_score
     
@@ -423,7 +418,7 @@ def draw_next_shape(shape, surface, top_x):
  
     surface.blit(label, (sx + 10, sy- 30))
  
-def draw_window(surface, top_x, grid, SCORE, last_score):
+def draw_window(surface, top_x, grid, SCORE, high_score, last_score):
     # Titulo Tetris 
     font = pygame.font.SysFont('comicsans', 60)
     label = font.render('TETRIS', 1, (0,0,0))
@@ -622,8 +617,8 @@ def main():
             SCORE2= new_score2
         
         win.fill((0,0,0))
-        draw_window(win, top_LEFT_X1, grid1, SCORE1, last_score1)
-        draw_window(win, top_LEFT_X2, grid2, SCORE2, last_score2)
+        draw_window(win, top_LEFT_X1, grid1, SCORE1, high_score, last_score1)
+        draw_window(win, top_LEFT_X2, grid2, SCORE2, high_score, last_score2)
         draw_next_shape(next_piece1, win, top_LEFT_X1)
         draw_next_shape(next_piece2, win, top_LEFT_X2)
         pygame.display.update()
